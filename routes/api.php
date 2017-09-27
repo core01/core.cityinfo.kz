@@ -21,3 +21,6 @@
         'uses' => 'Telegram\TelegramController@getRequest',
 
     ]);
+    Route::post('/telegram', [
+        'uses' => 'Telegram\TelegramController@postRequest',
+    ]);
