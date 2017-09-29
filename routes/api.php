@@ -16,11 +16,12 @@
     Route::middleware('auth:api')->get('/user', function (Request $request) {
         return $request->user();
     });
-    Route::get('/telegram', [
+/*    Route::get('/telegram/{token}/webhook', [
         'as'   => 'telegram-bot',
         'uses' => 'Telegram\TelegramController@getRequest',
 
-    ]);
-    Route::post('/telegram', [
+    ]);*/
+    Route::post('/telegram/{token}/webhook', [
         'uses' => 'Telegram\TelegramController@postRequest',
     ]);
+  Route::get('/test', 'Telegram\TelegramController@test');
