@@ -133,7 +133,7 @@
                             $responseText = "<b>Выгодные курсы</b> обмена валюты, по запросу \"<b>" . $text . "</b>\":\n\r";
                             $responseTextCourses = '';
                             foreach ($rates as $rate) {
-                                if ($rate->$field === $arrbest[$field] && $rate->$field != '0.00') {
+                                if ($rate->$field === $arrbest[$field]) {
                                     $responseTextCourses .= "<b>" . html_entity_decode($rate->name) . "</b>\n\r" . $text .
                                         ' - <b>' . $rate->$field . " KZT</b>\n\r" . "<b>Время обновления: </b>" .
                                         date("d.m.y H:i", $rate->date_update) . "\n\r" .
@@ -220,12 +220,12 @@
                 ];
                 foreach ($rates as $rate) {
                     if (substr($field, 0, 3) == 'sel') {
-                        if ($rate->$field <= $arrbest[$field]) {
-                            $arrbest[$field] = $rate->$field;
+                        if (($rate->$field <= $arrbest[$field]) && ((float)$rate->$field > 0)) {
+                            $arrbest[$field] = (float)$rate->$field;
                         }
                     } else {
                         if ($rate->$field >= $arrbest[$field]) {
-                            $arrbest[$field] = $rate->$field;
+                            $arrbest[$field] = (float)$rate->$field;
                         }
                     }
                 }

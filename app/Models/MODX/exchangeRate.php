@@ -33,4 +33,20 @@ class exchangeRate extends Model
     protected $table = 'new_exchange_rates';
 
     protected $connection = 'cityinfo';
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'buyUSD'  => 'float',
+        'sellUSD' => 'float',
+        'buyEUR'  => 'float',
+        'sellEUR' => 'float',
+        'buyRUB'  => 'float',
+        'sellRUB' => 'float',
+        'buyCNY'  => 'float',
+        'sellCNY' => 'float',
+    ];
 }
