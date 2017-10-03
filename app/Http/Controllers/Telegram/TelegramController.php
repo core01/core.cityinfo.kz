@@ -72,6 +72,7 @@
                     $text = $updates->getMessage()->getText();
 
                     switch ($text) {
+                        case 'Выбор города':
                         case 'Начать сначала':
                             $text = 'Для просмотра курсов, выберите город';
                             $reply_markup = Telegram::replyKeyboardMarkup([
@@ -90,6 +91,9 @@
                             break;
                         case 'Усть-Каменогорск':
                         case 'Усть-Каменогорск ОПТ':
+                        case 'Астана':
+                        case 'Алматы':
+                        case 'Павлодар':
                             $this->attachChatToCity($text, $chat->getId());
 
                             $keyboard = [
@@ -101,7 +105,7 @@
                                 ["Продажа\u{1F1F7}\u{1F1FA}", "Покупка\u{1F1F7}\u{1F1FA}"],
                                 // CNY
                                 ["Продажа\u{1F1E8}\u{1F1F3}", "Покупка\u{1F1E8}\u{1F1F3}"],
-                                ['Начать сначала']
+                                ['Выбор города']
                             ];
                             $this->sendMessage($keyboard, $chat->getId(), 'Выберите валюту');
                             break;
@@ -163,7 +167,6 @@
                                     'reply_markup' => $reply_markup
                                 ]);
                             } else {
-
                                 $this->sendMessage(false, $chat->getId(), $responseText . $responseTextCourses);
                             }
                             break;
@@ -191,6 +194,9 @@
             $cities = [
                 'Усть-Каменогорск'     => 4,
                 'Усть-Каменогорск ОПТ' => 5,
+                'Павлодар'             => 1,
+                'Алматы'               => 2,
+                'Астана'               => 3,
             ];
             if (in_array($city, array_keys($cities))) {
                 TelegramBotChat::updateOrCreate(
@@ -251,10 +257,23 @@
                     'reply_markup' => $reply_markup
                 ]);
             } else {
+                $reply_markup = Telegram::replyKeyboardMarkup([
+                    'inline_keyboard'   => [
+                        [
+                            [
+                                'text' => 'Более подробно на сайте',
+                                'url'  => 'https://cityinfo.kz/exchange/',
+                            ]
+                        ]
+                    ],
+                    'resize_keyboard'   => true,
+                    'one_time_keyboard' => true
+                ]);
                 $response = Telegram::sendMessage([
-                    'chat_id'    => $chatId,
-                    'text'       => $text,
-                    'parse_mode' => 'HTML'
+                    'chat_id'      => $chatId,
+                    'text'         => $text,
+                    'parse_mode'   => 'HTML',
+                    'reply_markup' => $reply_markup
                 ]);
             }
 
