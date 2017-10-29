@@ -10,7 +10,10 @@
         "fideloper/proxy": "~3.3",
         "irazasyed/telegram-bot-sdk": "^2.2.0",
         "laravel/framework": "5.5.*",
-        "laravel/tinker": "~1.0"
+        "laravel/tinker": "~1.0",
+        "pyaesone17/active-state": "^1.2",
+        "spatie/laravel-permission": "^2.7",
+        "lord/laroute" : "2.*"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
