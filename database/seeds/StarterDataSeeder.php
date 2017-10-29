@@ -17,6 +17,7 @@ class StarterDataSeeder extends Seeder
     {
         //
         $admin = Role::firstOrCreate(['name' => 'admin']);
+        $user = Role::firstOrCreate(['name' => 'user']);
         $user = User::role('admin')->first();
         if (!$user) {
             $user = new User();
