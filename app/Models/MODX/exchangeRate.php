@@ -49,4 +49,6 @@ class exchangeRate extends Model
         'buyCNY'  => 'float',
         'sellCNY' => 'float',
     ];
+
+    public $timestamps = false;
 }

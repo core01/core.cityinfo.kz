@@ -15,4 +15,6 @@ class exchCityName extends Model
     protected $table = 'new_exchCityNames';
 
     protected $connection = 'cityinfo';
+
+    public $timestamps = false;
 }
