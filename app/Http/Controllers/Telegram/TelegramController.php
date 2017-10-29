@@ -19,9 +19,15 @@
     use Telegram\Bot\Api;
     use Telegram\Bot\Commands\Command;
     use Telegram\Bot\Laravel\Facades\Telegram;
+    use Telegram\Bot\Objects\Update;
 
     class TelegramController extends Controller
     {
+        public function __construct()
+        {
+            $this->botan = new Botan(env('BOTAN_API_KEY'));
+        }
+
         protected $aliases = [
             "Покупка\u{1F1FA}\u{1F1F8}" => 'buyUSD',
             "Продажа\u{1F1FA}\u{1F1F8}" => 'sellUSD',
@@ -40,6 +46,7 @@
             "RUB" => "\u{1F1F7}\u{1F1FA}",
             "CNY" => "\u{1F1E8}\u{1F1F3}"
         ];
+        protected $botan;
 
         public function getRequest()
         {
@@ -58,19 +65,16 @@
 
         public function postRequest(Request $request, $token)
         {
-            /* @var $update \Telegram\Bot\Objects\Update */
+            /* @var $updates \Telegram\Bot\Objects\Update */
             $updates = Telegram::getWebhookUpdates();
             try {
                 if ($token !== env('TELEGRAM_BOT_TOKEN')) {
                     throw new Exception('Invalid token');
                 }
-                $chat = $updates->getMessage()->getChat();
                 $type = Telegram::detectMessageType($updates);
-                $botan = new Botan(env('BOTAN_API_KEY'));
                 $rawResponse = $updates->getMessage()->getRawResponse();
                 if ($type === 'text') {
                     $text = $updates->getMessage()->getText();
-
                     switch ($text) {
                         case 'Выбор города':
                         case 'Начать сначала':
@@ -82,7 +86,7 @@
                             ]);
 
                             $response = Telegram::sendMessage([
-                                'chat_id'      => $chat->getId(),
+                                'chat_id'      => $updates->getMessage()->getChat()->getId(),
                                 'text'         => $text,
                                 'reply_markup' => $reply_markup
                             ]);
@@ -94,7 +98,8 @@
                         case 'Астана':
                         case 'Алматы':
                         case 'Павлодар':
-                            $this->attachChatToCity($text, $chat->getId());
+                        case 'Риддер':
+                            $this->attachChatToCity($text, $updates->getMessage()->getChat()->getId());
 
                             $keyboard = [
                                 // USD
@@ -107,7 +112,7 @@
                                 ["Продажа\u{1F1E8}\u{1F1F3}", "Покупка\u{1F1E8}\u{1F1F3}"],
                                 ['Выбор города']
                             ];
-                            $this->sendMessage($keyboard, $chat->getId(), 'Выберите валюту');
+                            $this->sendMessage($keyboard, $updates, 'Выберите валюту');
                             break;
                         // USD
                         case "Продажа\u{1F1FA}\u{1F1F8}":
@@ -122,17 +127,20 @@
                         case "Продажа\u{1F1E8}\u{1F1F3}":
                         case "Покупка\u{1F1E8}\u{1F1F3}":
                             /* @var \App\Models\TelegramBotChat $telegramChat */
-                            $telegramChat = TelegramBotChat::where('chat_id', '=', $chat->getId())->firstOrFail();
+                            $telegramChat = TelegramBotChat::where('chat_id', '=',
+                                $updates->getMessage()->getChat()->getId())->firstOrFail();
 
                             $userCityId = $telegramChat->city_id;
                             $field = $this->aliases[$text];
-                            $botan->track($rawResponse,
+                            $this->botan->track($rawResponse,
                                 $field . ' ' . exchCityName::where(['id' => $userCityId])->first()->name);
                             $rates = exchangeRate::where([
                                 'city_id'   => $userCityId,
                                 'hidden'    => 0,
                                 'published' => 1,
-                            ])->get([$field, 'name', 'date_update', 'info', 'phones']);
+                            ])
+                                ->where('date_update', '>=', strtotime("-1 DAY"))
+                                ->get([$field, 'name', 'date_update', 'info', 'phones']);
                             $arrbest = $this->getBestCoursesByText($text, $rates);
                             $responseText = "<b>Выгодные курсы</b> обмена валюты, по запросу \"<b>" . $text . "</b>\":\n\r";
                             $responseTextCourses = '';
@@ -140,10 +148,14 @@
                                 if ($rate->$field === $arrbest[$field]) {
                                     $responseTextCourses .= "<b>" . html_entity_decode($rate->name) . "</b>\n\r" . $text .
                                         ' - <b>' . $rate->$field . " KZT</b>\n\r" . "<b>Время обновления: </b>" .
-                                        date("d.m.y H:i", $rate->date_update) . "\n\r" .
-                                        "<b>Телефоны:</b> " . $rate->phones . "\n\r" .
-                                        "<b>Адрес:</b> " . $rate->info . "\n\r" .
-                                        "\n\r";
+                                        date("d.m.y H:i", $rate->date_update) . "\n\r";
+                                    if (!empty($rate->phones)) {
+                                        $responseTextCourses .= "<b>Телефоны:</b> " . $rate->phones . "\n\r" .
+                                            "<b>Адрес:</b> " . $rate->info . "\n\r";
+                                    } else {
+                                        $responseTextCourses .= "<b>Информация:</b> " . $rate->info . "\n\r";
+                                    }
+                                    $responseTextCourses .= "\n\r";
                                 }
                             }
                             if (empty($responseTextCourses)) {
@@ -162,12 +174,13 @@
                                     'one_time_keyboard' => true
                                 ]);
                                 Telegram::sendMessage([
-                                    'chat_id'      => $chat->getId(),
+                                    'chat_id'      => $updates->getMessage()->getChat()->getId(),
                                     'text'         => $responseText,
                                     'reply_markup' => $reply_markup
                                 ]);
                             } else {
-                                $this->sendMessage(false, $chat->getId(), $responseText . $responseTextCourses);
+                                $this->sendMessage(false, $updates,
+                                    $responseText . $responseTextCourses);
                             }
                             break;
                         default:
@@ -178,7 +191,7 @@
             } catch (Exception $e) {
                 Log::error($e->getMessage());
                 if ($updates->getMessage() !== null) {
-                    $this->sendMessage(false, $updates->getMessage()->getChat()->getId(),
+                    $this->sendMessage(false, $updates,
                         'Сервис временно недоступен, пожалуйста свяжитесь с администрацией info@cityinfo.kz');
                 }
                 abort(400);
@@ -197,6 +210,7 @@
                 'Павлодар'             => 1,
                 'Алматы'               => 2,
                 'Астана'               => 3,
+                'Риддер'               => 6
             ];
             if (in_array($city, array_keys($cities))) {
                 TelegramBotChat::updateOrCreate(
@@ -243,7 +257,7 @@
 
         }
 
-        private function sendMessage($keyboard, $chatId, $text, $oneTime = false)
+        private function sendMessage($keyboard, Update $updates, $text, $oneTime = false)
         {
             if ($keyboard) {
                 $reply = [];
@@ -252,11 +266,12 @@
                 $reply['resize_keyboard'] = true;
                 $reply_markup = Telegram::replyKeyboardMarkup($reply);
                 $response = Telegram::sendMessage([
-                    'chat_id'      => $chatId,
+                    'chat_id'      => $updates->getMessage()->getChat()->getId(),
                     'text'         => $text,
                     'reply_markup' => $reply_markup
                 ]);
             } else {
+                //Log::info($this->botan->shortenUrl('https://cityinfo.kz/exchange/', $updates->getMessage()->getFrom()->getId()));
                 $reply_markup = Telegram::replyKeyboardMarkup([
                     'inline_keyboard'   => [
                         [
@@ -270,7 +285,7 @@
                     'one_time_keyboard' => true
                 ]);
                 $response = Telegram::sendMessage([
-                    'chat_id'      => $chatId,
+                    'chat_id'      => $updates->getMessage()->getChat()->getId(),
                     'text'         => $text,
                     'parse_mode'   => 'HTML',
                     'reply_markup' => $reply_markup
