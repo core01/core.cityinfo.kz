@@ -49,7 +49,7 @@ class RegisterController extends Controller
     public function showRegistrationForm()
     {
 
-        if (!config('app.REGISTRATION_ENABLE')) {
+        if (!config('app.registration_enabled')) {
             return abort(404);
         }
         return view('auth.register');
@@ -63,7 +63,7 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        if (!config('app.REGISTRATION_ENABLE')) {
+        if (!config('app.registration_enabled')) {
             return abort(404);
         }
         $this->validator($request->all())->validate();

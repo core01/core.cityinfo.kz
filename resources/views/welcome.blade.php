@@ -72,7 +72,7 @@
                 <a href="{{ route('manager') }}">@lang('content.dashboard')</a>
                 @else
                     <a href="{{ route('login') }}">@lang('auth.login')</a>
-                    @if(config('registration_enabled'))
+                    @if(config('app.registration_enabled'))
                         <a href="{{ route('register') }}">@lang('auth.register')</a>
                     @endif
 

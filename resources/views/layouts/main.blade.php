@@ -56,8 +56,7 @@
                         <a class="navbar-item" href="{{ route('login') }}">
                             @lang('auth.login')
                         </a>
-
-                        @if(config('registration_enabled'))
+                        @if(config('app.registration_enabled'))
                             <a class="navbar-item" href="{{ route('register') }}">
                                 @lang('auth.register')
                             </a>
