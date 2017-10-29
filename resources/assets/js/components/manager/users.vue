@@ -39,7 +39,7 @@
                     <td>{{index + 1}}</td>
                     <td>{{user.name}}</td>
                     <td>{{user.email}}</td>
-                    <td>{{user.roles[0].name}}</td>
+                    <td><template v-if="user.roles.length > 0">{{user.roles[0].name}}</template></td>
                     <td>{{ user.attributes.last_seen_at }}</td>
                     <td><a @click.prevent="showUserEditForm(user)">Редактировать</a></td>
                 </tr>
