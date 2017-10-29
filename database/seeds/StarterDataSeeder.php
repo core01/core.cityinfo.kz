@@ -16,6 +16,7 @@ class StarterDataSeeder extends Seeder
     public function run()
     {
         //
+        $admin = Role::firstOrCreate(['name' => 'admin']);
         $user = User::role('admin')->first();
         if (!$user) {
             $user = new User();
@@ -33,7 +34,6 @@ class StarterDataSeeder extends Seeder
         $deleteUsers = Permission::firstOrCreate(['name' => 'delete users']);
         $manageUsers = Permission::firstOrCreate(['name' => 'manage users']);
         $manageCm = Permission::firstOrCreate(['name' => 'manage company meta']);
-        $admin = Role::firstOrCreate(['name' => 'admin']);
 
 
         if (!$user->hasRole($admin->name)) {
