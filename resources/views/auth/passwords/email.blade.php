@@ -1,47 +1,61 @@
-@extends('layouts.app')
+@extends('layouts.main')
 
 @section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Reset Password</div>
-
-                <div class="panel-body">
-                    @if (session('status'))
-                        <div class="alert alert-success">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    <form class="form-horizontal" method="POST" action="{{ route('password.email') }}">
-                        {{ csrf_field() }}
-
-                        <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required>
-
-                                @if ($errors->has('email'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('email') }}</strong>
-                                    </span>
-                                @endif
+    <div class="columns">
+        <div class="column is-offset-2 is-8">
+            <div class="card">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        @lang('auth.login')
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        @if (session('status'))
+                            <div class="alert alert-success">
+                                {{ session('status') }}
                             </div>
-                        </div>
+                        @endif
+                        <form class="form-horizontal" method="POST" action="{{ route('password.email') }}">
+                            {{ csrf_field() }}
 
-                        <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Send Password Reset Link
-                                </button>
+                            <div class="field is-horizontal">
+                                <div class="field-label is-normal">
+                                    <label for="email" class="label">@lang('auth.email')</label>
+                                </div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control">
+                                            <input id="email" type="text"
+                                                   class="input {{ $errors->has('email') ? 'is-danger' : '' }}"
+                                                   name="email" value="{{ old('email') }}" required autofocus>
+                                        </div>
+                                        @if ($errors->has('email'))
+                                            <p class="help is-danger">
+                                                <strong>{{ $errors->first('email') }}</strong>
+                                            </p>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                            <div class="field is-horizontal">
+                                <div class="field-label">
+                                    <!-- Left empty for spacing -->
+                                </div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control">
+                                            <button type="submit" class="button is-primary">
+                                                @lang('auth.reset_password_link')
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
