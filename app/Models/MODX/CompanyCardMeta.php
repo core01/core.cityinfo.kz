@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property $id
  * @property $id_iobj
  * @property $description
+ * @property $images
  *
  */
 class CompanyCardMeta extends Model
@@ -19,6 +20,6 @@ class CompanyCardMeta extends Model
     protected $table = 'companies_cards_meta';
 
     protected $connection = 'cityinfo';
-    protected $fillable = ['id_iobj', 'description'];
+    protected $fillable = ['id_iobj', 'description', 'images'];
     public $timestamps = false;
 }

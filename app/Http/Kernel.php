@@ -2,7 +2,6 @@
 
 namespace App\Http;
 
-use App\Http\Middleware\Permissions\CanManageCompanyMeta;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -62,5 +61,6 @@ class Kernel extends HttpKernel
 
         'manage.company.meta' => \App\Http\Middleware\Permissions\CanManageCompanyMeta::class,
         'manage.users'        => \App\Http\Middleware\Permissions\CanManageUsers::class,
+        'manage.image' => \App\Http\Middleware\Permissions\CanManageImage::class,
     ];
 }

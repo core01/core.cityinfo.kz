@@ -24,10 +24,7 @@ class ManagerController extends Controller
 
     public function renderUsers(Request $request)
     {
-        $users = User::with(['attributes', 'roles'])->get();
-        $roles = Role::with('permissions')->get();
-        $permissions = Permission::all();
-        return view('manager.users', ['users' => $users, 'roles' => $roles, 'permissions' => $permissions]);
+        return view('manager.users');
     }
 
     public function renderCompanyMeta(Request $request)
@@ -49,8 +46,9 @@ class ManagerController extends Controller
                 'data'    => [
                     'id'          => $card->id,
                     'company_id'  => $card->id_iobj,
-                    'description' => $card->description
-                ]
+                    'description' => $card->description,
+                    'images'      => $card->images
+                ],
             ]);
         }
 
@@ -59,28 +57,41 @@ class ManagerController extends Controller
     public function saveCompanyMeta(Request $request)
     {
         $request->validate([
-            'company_id'  => 'required|integer',
-            'description' => 'required|string|max:255'
+            'company_id'   => 'required|integer',
+            'description'  => 'required|string|max:255',
+            'images.*.src' => 'string'
         ]);
 
         $card = CompanyCardMeta::updateOrCreate(
             ['id_iobj' => $request->company_id],
             ['description' => $request->description]
         );
+        if ($images = $request->images) {
+            if ($card->images !== $request->images) {
+                $card->images = json_encode($request->images);
+                $card->save();
+            }
+        }
         return response()->json([
             'success' => true,
             'data'    => [
                 'card_id'     => $card->id,
                 'company_id'  => $card->id_iobj,
                 'description' => $card->description,
-            ]
+                'images'      => $card->images
+            ],
         ]);
     }
 
     public function saveUser(Request $request)
     {
-        $user = Auth::user();
+        /* @var $user \App\Models\User */
+        $user = User::find($request->user['id']);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found']);
+        }
         $request->validate([
+            'user.id'    => 'required|integer',
             'role.id'    => 'required|integer',
             'user.email' => 'required|string|email|max:190|unique:users,email,' . $user->id,
             'user.name'  => 'required|string|max:190',
@@ -90,7 +101,6 @@ class ManagerController extends Controller
         $user->save();
         $role = Role::where('id', $request->role['id'])->first();
         $user->syncRoles([$role->name]);
-
 
         return response()->json(['user' => $user, 'roles' => $user->getRoleNames()]);
     }
