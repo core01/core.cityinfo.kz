@@ -6,5 +6,5 @@ use App\Http\Middleware\CheckPermission;
 
 class CanManageImage extends CheckPermission
 {
-    protected $permission = 'manage image';
+    protected $permission = 'manage images';
 }

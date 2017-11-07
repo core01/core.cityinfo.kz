@@ -66,11 +66,9 @@ class ManagerController extends Controller
             ['id_iobj' => $request->company_id],
             ['description' => $request->description]
         );
-        if ($images = $request->images) {
-            if ($card->images !== $request->images) {
-                $card->images = json_encode($request->images);
-                $card->save();
-            }
+        if ($card->images !== $request->images) {
+            $card->images = json_encode($request->images);
+            $card->save();
         }
         return response()->json([
             'success' => true,

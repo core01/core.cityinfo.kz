@@ -40,7 +40,7 @@ class UploadController extends Controller
         list(,,$userId) = explode('/',$fileName);
         /* @var $user \App\Models\User */
         $user = Auth::user();
-        if ($userId === $user->id || $user->hasPermissionTo('manage image')) {
+        if ($userId === $user->id || $user->hasPermissionTo('manage images')) {
             Storage::delete($fileName);
             return response()->json(['success' => true]);
         } else {

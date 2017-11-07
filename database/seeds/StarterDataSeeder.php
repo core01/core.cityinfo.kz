@@ -35,6 +35,7 @@ class StarterDataSeeder extends Seeder
         $deleteUsers = Permission::firstOrCreate(['name' => 'delete users']);
         $manageUsers = Permission::firstOrCreate(['name' => 'manage users']);
         $manageCm = Permission::firstOrCreate(['name' => 'manage company meta']);
+        $manageImages = Permission::firstOrCreate(['name' => 'manage images']);
 
 
         if (!$user->hasRole($admin->name)) {
