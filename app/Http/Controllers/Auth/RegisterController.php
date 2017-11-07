@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Request;
+
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Spatie\Permission\Models\Role;
 
 class RegisterController extends Controller
 {
@@ -71,7 +73,8 @@ class RegisterController extends Controller
         event(new Registered($user = $this->create($request->all())));
 
         $this->guard()->login($user);
-        $user->assignRole('user');
+        $role = Role::firstOrCreate(['name' => 'user'], ['name' => 'user', 'guard_name' => 'web']);
+        $user->assignRole($role->name);
         return $this->registered($request, $user)
             ?: redirect($this->redirectPath());
     }
