@@ -11,17 +11,17 @@
   },
   "devDependencies": {
     "axios": "^0.16.2",
-    "bootstrap": "^4.0.0-beta",
-    "bootstrap-sass": "^3.3.7",
     "bulma": "^0.6.0",
-    "cross-env": "^5.0.1",
-    "jquery": "^3.1.1",
-    "laravel-mix": "^1.0",
+    "cross-env": "^5.1.1",
+    "laravel-mix": "^1.5.1",
     "lodash": "^4.17.4",
-    "popper.js": "^1.11.0",
-    "vue": "^2.1.10"
+    "vue": "^2.5.3"
   },
   "dependencies": {
-    "vue-clickaway": "^2.1.0"
+    "vee-validate": "^2.0.0-rc.21",
+    "vue-clickaway": "^2.1.0",
+    "vue-silentbox": "^0.1.1",
+    "vue-upload-component": "^2.6.3",
+    "vue2-notify": "git+https://github.com/core01/vue2-notify.git"
   }
 }

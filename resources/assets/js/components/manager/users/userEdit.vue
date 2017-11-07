@@ -1,22 +1,21 @@
 <template>
     <form id="form">
-        <p class="notification" v-if="message.message.length > 0" :class="message.className">{{ message.message }}</p>
         <div class="field">
             <label class="label">Имя пользователя</label>
             <div class="control">
                 <input type="text" v-model="user.name" class="input"
-                       :class="{'is-danger': errors['user.name'].length > 0 }">
+                       :class="{'is-danger': errorsArray['user.name'].length > 0 }">
             </div>
-            <p class="help is-danger" v-if="errors['user.name'].length > 0">{{ errors['user.name'] }}</p>
+            <p class="help is-danger" v-if="errorsArray['user.name'].length > 0">{{ errorsArray['user.name'] }}</p>
         </div>
 
         <div class="field">
             <label class="label">Email</label>
             <div class="control">
                 <input type="text" v-model="user.email" class="input"
-                       :class="{'is-danger': errors['user.email'].length > 0 }">
+                       :class="{'is-danger': errorsArray['user.email'].length > 0 }">
             </div>
-            <p class="help is-danger" v-if="errors['user.email'].length > 0">{{ errors['user.email'] }}</p>
+            <p class="help is-danger" v-if="errorsArray['user.email'].length > 0">{{ errorsArray['user.email'] }}</p>
         </div>
         <div class="field">
             <label class="label">Последняя активность</label>
@@ -27,7 +26,7 @@
         <div class="field">
             <label class="label">Главная роль</label>
             <div class="control">
-                <div class="select" :class="{'is-danger': errors['role.id'].length > 0 }">
+                <div class="select" :class="{'is-danger': errorsArray['role.id'].length > 0 }">
                     <select @change="setRole">
                         <option v-for="role in roles" :value="role.id"
                                 :selected="role.id == selectedRole.id">{{ role.name }}
@@ -46,19 +45,16 @@
 
 <script>
   import axios from 'axios';
+  import routes from '../../../routes';
 
   export default {
     data () {
       return {
-        message: {
-          message: '',
-          className: 'is-danger',
-        },
         selectedRole: {
           id: '',
           name: '',
         },
-        errors: {
+        errorsArray: {
           'user.name': '',
           'user.email': '',
           'role.name': '',
@@ -74,21 +70,19 @@
           user: this.user,
           role: this.selectedRole,
         }).then(function (response) {
-          vm.message.message = 'Данные успешно сохранены';
-          vm.message.className = 'is-success';
+          vm.$notify.success('Данные успешно сохранены!');
           vm.user.roles[0].name = vm.selectedRole.name;
         })
           .catch(function (error) {
             let errors = error.response.data.errors;
             if (errors) {
               for (let error in errors) {
-                if (vm.errors.hasOwnProperty(error)) {
-                  vm.errors[error] = errors[error][0];
+                if (vm.errorsArray.hasOwnProperty(error)) {
+                  vm.errorsArray[error] = errors[error][0];
                 }
               }
             }
-            vm.message.message = 'Ошибка';
-            vm.message.className = 'is-danger';
+            vm.$notify.danger('Ошибка при заполнении формы!');
           });
       },
       setRole (e) {

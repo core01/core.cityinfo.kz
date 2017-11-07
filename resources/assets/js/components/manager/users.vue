@@ -39,7 +39,9 @@
                     <td>{{index + 1}}</td>
                     <td>{{user.name}}</td>
                     <td>{{user.email}}</td>
-                    <td><template v-if="user.roles.length > 0">{{user.roles[0].name}}</template></td>
+                    <td>
+                        <template v-if="user.roles.length > 0">{{user.roles[0].name}}</template>
+                    </td>
                     <td>{{ user.attributes.last_seen_at }}</td>
                     <td><a @click.prevent="showUserEditForm(user)">Редактировать</a></td>
                 </tr>
@@ -92,14 +94,17 @@
   import roleEdit from './roles/roleEdit.vue';
   import userEdit from './users/userEdit.vue';
   import permissions from './permissions.vue';
+  import routes from '../../routes';
 
   export default {
     data () {
       return {
         type: 'users',
         user: {},
+        users: {},
         role: {},
         roles: {},
+        permissions: {},
         newRoleName: '',
         statuses: {
           newRole: {
@@ -111,7 +116,6 @@
       };
     },
     props: [
-      'users', 'allRoles', 'permissions'
     ],
     methods: {
       setType (type) {
@@ -128,11 +132,11 @@
         })
           .then(function (response) {
             vm.roles.push(response.data);
-            vm.statuses.newRole.message = 'Роль добавлена';
-            vm.statuses.newRole.className = 'is-success';
+            vm.$notify.success('Роль добавлена!');
           })
           .catch(function (error) {
             if (error.response.data) {
+              vm.$notify.danger('Ошибка при заполнении формы!');
               vm.statuses.newRole.message = error.response.data.errors.role_name[0];
               vm.statuses.newRole.className = 'is-danger';
             }
@@ -159,7 +163,28 @@
     },
     computed: {},
     mounted () {
-      this.roles = this.allRoles;
+      let vm = this;
+      axios.get(routes.route('get.users'))
+        .then(function (response) {
+          vm.users = response.data.users;
+        })
+        .catch(function (error) {
+          vm.$notify.danger('Ошибка при получении списка пользователей!');
+        });
+      axios.get(routes.route('get.all.permissions'))
+        .then(function (response) {
+          vm.permissions = response.data.permissions;
+        })
+        .catch(function (error) {
+          vm.$notify.danger('Ошибка при получении списка прав!');
+        });
+      axios.get(routes.route('get.roles'))
+        .then(function (response) {
+          vm.roles = response.data.roles;
+        })
+        .catch(function (error) {
+          vm.$notify.danger('Ошибка при получении списка ролей!');
+        });
     },
     created () {
 

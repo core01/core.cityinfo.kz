@@ -10,7 +10,7 @@
                     </p>
                 </header>
                 <div class="card-content">
-                    <users :users="{{ $users }}" :all-roles="{{ $roles }}" :permissions="{{ $permissions }}"></users>
+                    <users></users>
                 </div>
             </div>
         </div>

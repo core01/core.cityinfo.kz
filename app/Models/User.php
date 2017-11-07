@@ -48,4 +48,8 @@ class User extends Authenticatable
         return $this->hasOne('App\Models\UserAttributes');
     }
 
+    public static function getAll()
+    {
+        return self::with(['attributes', 'roles'])->get();
+    }
 }

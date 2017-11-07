@@ -12,8 +12,5 @@ let mix = require('laravel-mix');
  */
 
 mix.js('resources/assets/js/app.js', 'public/js')
-  .scripts([
-    'resources/assets/js/routes.js'
-  ], 'public/js/routes.js')
   .sass('resources/assets/sass/app.sass', 'public/css')
   .styles('resources/assets/css/email.css', 'public/css/email.css');

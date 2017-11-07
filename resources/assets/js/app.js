@@ -15,9 +15,58 @@ import AuthLogout from './components/auth/logout.vue';
 import users from './components/manager/users.vue';
 import companyMeta from './components/manager/companyMeta.vue';
 
+import { config } from './validate.config.js';
+import VeeValidate, { Validator } from 'vee-validate';
+import ru from 'vee-validate/dist/locale/ru';
+import notify from 'vue2-notify';
+
+import VueSilentbox from 'vue-silentbox';
+
+Vue.use(VueSilentbox);
+
+Vue.use(notify, {
+  itemClass: 'notification',
+  position: 'bottom-right',
+  visibility: 5000,
+  enter: 'fadeIn',
+  leave: 'fadeOut',
+  duration: 500,
+  width: 'auto',
+  permanent: false,
+  mode: 'text',
+  closeButton: 'bulma'
+});
+const types = {
+  info: {
+    itemClass: 'is-info'
+  },
+  error: {
+    itemClass: 'is-danger'
+  },
+  warning: {
+    itemClass: 'is-warning'
+  },
+  success: {
+    itemClass: 'is-success'
+  }
+
+};
+
+Vue.$notify.setTypes(types);
+//Vue.$notify.setTypes(types);
+
+Validator.localize('ru', ru);
+
+Vue.use(VeeValidate, config);
+
 const app = new Vue({
   el: '#app',
+  data () {
+    return {};
+  },
   components: {
-    AuthLogout, users, companyMeta
+    AuthLogout,
+    users,
+    companyMeta,
   }
 });

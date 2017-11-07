@@ -27,6 +27,7 @@
 
 <script>
   import axios from 'axios';
+  import routes from '../../../routes';
 
   export default {
     data () {

@@ -62,7 +62,7 @@
                                 <div class="field-body">
                                     <div class="field">
                                         <div class="control">
-                                            <input id="password" type="text"
+                                            <input id="password" type="password"
                                                    class="input {{ $errors->has('password') ? 'is-danger' : '' }}"
                                                    name="password" value="{{ old('password') }}" required autofocus>
                                         </div>
@@ -83,7 +83,7 @@
                                 <div class="field-body">
                                     <div class="field">
                                         <div class="control">
-                                            <input id="password-confirm" type="text"
+                                            <input id="password-confirm" type="password"
                                                    class="input {{ $errors->has('password_confirmation') ? 'is-danger' : '' }}"
                                                    name="password_confirmation"
                                                    value="{{ old('password_confirmation') }}" required autofocus>
