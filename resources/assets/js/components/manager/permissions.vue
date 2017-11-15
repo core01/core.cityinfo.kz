@@ -160,7 +160,7 @@
                 vm.$notify.danger(error.response.data.message);
               });
           } else {
-            vm.$notify.danger(error.response.data.message);
+            vm.$notify.danger('Ошибка при заполнении формы')
           }
         });
       },
