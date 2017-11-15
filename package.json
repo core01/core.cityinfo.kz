@@ -18,9 +18,9 @@
     "vue": "^2.5.3"
   },
   "dependencies": {
+    "v-img": "^0.1.9",
     "vee-validate": "^2.0.0-rc.21",
     "vue-clickaway": "^2.1.0",
-    "vue-silentbox": "^0.1.1",
     "vue-upload-component": "^2.6.3",
     "vue2-notify": "git+https://github.com/core01/vue2-notify.git"
   }

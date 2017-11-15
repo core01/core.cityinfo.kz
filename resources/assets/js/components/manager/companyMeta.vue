@@ -31,48 +31,30 @@
                 <div class="field" v-if="images.length > 0">
                     <label class="label">Загруженные изображения:</label>
                     <div class="control">
-                        <silentbox-group>
-                            <div class="columns is-multiline">
-                                <div class="column is-6" v-for="(image,index) in images">
-                                    <article class="message is-success">
-                                        <div class="message-header">
-                                            <p></p>
-                                            <button class="delete" @click.prevent="deleteUploadedImage(index)"></button>
-                                        </div>
-                                        <div class="message-body">
-                                            <silentbox-item :src="image.src">
-                                                <img :src="image.src"
-                                                     style="width: 100%; max-height: 200px; background-repeat: no-repeat;background-position: center center;">
-                                            </silentbox-item>
-                                        </div>
-                                    </article>
+                        <div class="columns is-multiline">
+                            <div class="column is-3" v-for="(image,index) in images">
+                                <div class="preview">
+                                    <a class="delete" title="Удалить"
+                                       @click.prevent="deleteImage(index, true)"></a>
+                                    <img :src="image.src"
+                                         v-img:uploaded>
                                 </div>
                             </div>
-                        </silentbox-group>
+                        </div>
                     </div>
                 </div>
                 <div class="field" v-if="files.length > 0">
                     <label class="label">Новые изображения</label>
                     <div class="control">
-                        <silentbox-group>
-                            <div class="columns is-multiline">
-                                <div class="column is-6" v-for="(file,index) in files">
-                                    <article class="message is-info">
-                                        <div class="message-header">
-                                            {{ file.name }}
-                                            <button class="delete" @click.prevent="deleteImage(index)"></button>
-                                        </div>
-                                        <div class="message-body">
-                                            <silentbox-item :src="file.blob" :description="file.name">
-                                                <img :src="file.blob"
-                                                     style="width: 100%; max-height: 200px; background-repeat: no-repeat;background-position: center center;">
-
-                                            </silentbox-item>
-                                        </div>
-                                    </article>
+                        <div class="columns is-multiline">
+                            <div class="column is-3" v-for="(file,index) in files">
+                                <div class="preview">
+                                    <a class="delete" title="Удалить"
+                                       @click.prevent="deleteImage(index)"></a>
+                                    <img v-img:new :src="file.blob">
                                 </div>
                             </div>
-                        </silentbox-group>
+                        </div>
                     </div>
                 </div>
                 <div class="field is-grouped">
@@ -117,7 +99,6 @@
   import axios from 'axios';
   import routes from '../../routes';
   import VueUploadComponent from 'vue-upload-component';
-  import SilentboxGroup from '../../../../../node_modules/vue-silentbox/components/group.vue';
 
   export default {
     data () {
@@ -136,7 +117,6 @@
       };
     },
     components: {
-      SilentboxGroup,
       'file-upload': VueUploadComponent
     },
     props: [],
@@ -248,21 +228,23 @@
             console.log(error);
           });
       },
-      deleteImage (index) {
-        this.files.splice(index, 1);
-      },
-      deleteUploadedImage (index) {
-        let vm = this;
-        axios.delete(this.routes.route('image.delete'), {
-          params: vm.images[index]
+      deleteImage (index, uploaded = false) {
+        if (uploaded === false) {
+          this.files.splice(index, 1)
+        } else {
+          let vm = this
+          axios.delete(this.routes.route('image.delete'), {
+            params: vm.images[index]
 
-        }).then(function (response) {
-          vm.images.splice(index, 1);
-          vm.$notify.success('Изображение удалено!');
-        })
-          .catch(function (error) {
-            console.log(error.response);
-          });
+          }).then(function (response) {
+            vm.images.splice(index, 1)
+            vm.$notify.success('Изображение удалено!')
+          })
+            .catch(function (error) {
+              console.log(error.response)
+              vm.$notify.danger('Ошибка при удалении изображения')
+            })
+        }
       }
     },
     computed: {},
@@ -277,3 +259,28 @@
     }
   };
 </script>
+
+<style lang="sass" scoped>
+    .preview
+        border-radius: 3px
+        display: flex
+        border: 1px solid #c7e0ff
+        flex-direction: column
+        position: relative
+        height: 150px
+        justify-content: center
+        align-items: center
+        img
+            display: flex
+            align-items: center
+            justify-content: center
+            max-height: 125px
+            height: auto
+            width: auto
+            max-width: 125px
+
+        .preview > .delete
+            position: absolute
+            right: 0.5em
+            top: 0.5em
+</style>

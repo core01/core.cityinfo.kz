@@ -19,10 +19,17 @@ import { config } from './validate.config.js';
 import VeeValidate, { Validator } from 'vee-validate';
 import ru from 'vee-validate/dist/locale/ru';
 import notify from 'vue2-notify';
+import VueImg from 'v-img'
 
-import VueSilentbox from 'vue-silentbox';
-
-Vue.use(VueSilentbox);
+const vueImgConfig = {
+  // Use `alt` attribute as gallery slide title
+  altAsTitle: false,
+  // Display 'download' button near 'close' that opens source image in new tab
+  sourceButton: false,
+  // Event listener to open gallery will be applied to <img> element
+  openOn: 'click',
+}
+Vue.use(VueImg, vueImgConfig)
 
 Vue.use(notify, {
   itemClass: 'notification',
