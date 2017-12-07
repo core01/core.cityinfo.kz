@@ -25,7 +25,7 @@
     {
         public function __construct()
         {
-            $this->botan = new Botan(env('BOTAN_API_KEY'));
+            //$this->botan = new Botan(env('BOTAN_API_KEY'));
         }
 
         protected $aliases = [
@@ -132,8 +132,8 @@
 
                             $userCityId = $telegramChat->city_id;
                             $field = $this->aliases[$text];
-                            $this->botan->track($rawResponse,
-                                $field . ' ' . exchCityName::where(['id' => $userCityId])->first()->name);
+                            /*$this->botan->track($rawResponse,
+                                $field . ' ' . exchCityName::where(['id' => $userCityId])->first()->name);*/
                             $rates = exchangeRate::where([
                                 'city_id'   => $userCityId,
                                 'hidden'    => 0,
