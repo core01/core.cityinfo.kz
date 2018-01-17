@@ -44,72 +44,70 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import routes from '../../../routes';
+import connection from '../../../axios/connection'
+import routes from '../../../routes'
 
-  export default {
-    data () {
-      return {
-        selectedRole: {
-          id: '',
-          name: '',
-        },
-        errorsArray: {
-          'user.name': '',
-          'user.email': '',
-          'role.name': '',
-          'role.id': '',
-        },
-      };
-    },
-    props: ['user', 'roles'],
-    methods: {
-      saveUser () {
-        let vm = this;
-        axios.post(routes.route('manager.user.save'), {
+export default {
+  data() {
+    return {
+      selectedRole: {
+        id: '',
+        name: ''
+      },
+      errorsArray: {
+        'user.name': '',
+        'user.email': '',
+        'role.name': '',
+        'role.id': ''
+      }
+    }
+  },
+  props: ['user', 'roles'],
+  methods: {
+    saveUser() {
+      let vm = this
+      connection()
+        .post(routes.route('manager.user.save'), {
           user: this.user,
-          role: this.selectedRole,
-        }).then(function (response) {
-          vm.$notify.success('Данные успешно сохранены!');
-          vm.user.roles[0].name = vm.selectedRole.name;
+          role: this.selectedRole
         })
-          .catch(function (error) {
-            let errors = error.response.data.errors;
-            if (errors) {
-              for (let error in errors) {
-                if (vm.errorsArray.hasOwnProperty(error)) {
-                  vm.errorsArray[error] = errors[error][0];
-                }
+        .then(function(response) {
+          vm.$notify.success('Данные успешно сохранены!')
+          vm.user.roles[0].name = vm.selectedRole.name
+        })
+        .catch(function(error) {
+          let errors = error.response.data.errors
+          if (errors) {
+            for (let error in errors) {
+              if (vm.errorsArray.hasOwnProperty(error)) {
+                vm.errorsArray[error] = errors[error][0]
               }
             }
-            vm.$notify.danger('Ошибка при заполнении формы!');
-          });
-      },
-      setRole (e) {
-        let newRole;
-        for (let role in this.roles) {
-          if (this.roles.hasOwnProperty(role)) {
-            if (this.roles[role].id === +e.target.value) {
-              newRole = this.roles[role];
-            }
+          }
+          vm.$notify.danger('Ошибка при заполнении формы!')
+        })
+    },
+    setRole(e) {
+      let newRole
+      for (let role in this.roles) {
+        if (this.roles.hasOwnProperty(role)) {
+          if (this.roles[role].id === +e.target.value) {
+            newRole = this.roles[role]
           }
         }
-        if (newRole) {
-          this.selectedRole.name = newRole.name;
-          this.selectedRole.id = newRole.id;
-        }
       }
-    },
-    computed: {},
-    mounted () {
-      this.selectedRole.id = this.user.roles[0].id;
-      this.selectedRole.name = this.user.roles[0].name;
-    },
-    created () {
-
-    },
-    destroyed () {
-
+      if (newRole) {
+        this.selectedRole.name = newRole.name
+        this.selectedRole.id = newRole.id
+      }
     }
-  };
+  },
+  computed: {},
+  mounted() {
+    this.selectedRole.id = this.user.roles[0].id
+    this.selectedRole.name = this.user.roles[0].name
+  },
+  created() {},
+  destroyed() {}
+}
 </script>

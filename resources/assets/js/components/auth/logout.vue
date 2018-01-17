@@ -16,52 +16,45 @@
 </template>
 
 <script>
-  import axios from 'axios'
-  import { mixin as clickaway } from 'vue-clickaway'
+import connection from '../../axios/connection'
+import { mixin as clickaway } from 'vue-clickaway'
 
-  export default {
-    mixins: [clickaway],
-    data () {
-      return {
-        active: false,
-        url: location.href,
-      }
-    },
-    props: ['name', 'logoutUrl', 'profileUrl'],
-    methods: {
-      showDropdown () {
-        this.active = !this.active;
-      },
-      away: function () {
-        this.active = false
-      },
-      logout: function () {
-        let token = document.querySelector('[name=csrf-token]')
-        axios.post(this.logoutUrl, {
-          _token: token.content,
-        })
-          .then(function (response) {
-            location.href = response.data.redirect
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-      },
-      isActive: (url) => {
-        return url === this.url;
-      }
-    },
-    computed: {
-
-    },
-    mounted () {
-
-    },
-    created () {
-
-    },
-    destroyed () {
-
+export default {
+  mixins: [clickaway],
+  data() {
+    return {
+      active: false,
+      url: location.href
     }
-  }
+  },
+  props: ['name', 'logoutUrl', 'profileUrl'],
+  methods: {
+    showDropdown() {
+      this.active = !this.active
+    },
+    away: function() {
+      this.active = false
+    },
+    logout: function() {
+      let token = document.querySelector('[name=csrf-token]')
+      connection()
+        .post(this.logoutUrl, {
+          _token: token.content
+        })
+        .then(function(response) {
+          location.href = response.data.redirect
+        })
+        .catch(function(error) {
+          console.log(error)
+        })
+    },
+    isActive: url => {
+      return url === this.url
+    }
+  },
+  computed: {},
+  mounted() {},
+  created() {},
+  destroyed() {}
+}
 </script>

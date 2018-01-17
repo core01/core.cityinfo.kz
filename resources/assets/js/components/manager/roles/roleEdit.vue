@@ -26,57 +26,55 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import routes from '../../../routes';
+import connection from '../../../axios/connection'
+import routes from '../../../routes'
 
-  export default {
-    data () {
-      return {
-        message: {
-          className: 'is-success',
-          message: '',
-        },
-        rolePermissions: {},
-      };
-    },
-    props: ['role', 'permissions', 'type'],
-    methods: {
-      save () {
-        let vm = this;
-        axios.post(routes.route('manager.role.save'), {
+export default {
+  data() {
+    return {
+      message: {
+        className: 'is-success',
+        message: ''
+      },
+      rolePermissions: {}
+    }
+  },
+  props: ['role', 'permissions', 'type'],
+  methods: {
+    save() {
+      let vm = this
+      connection()
+        .post(routes.route('manager.role.save'), {
           role: this.role,
-          permissions: this.rolePermissions,
+          permissions: this.rolePermissions
         })
-          .then(function (response) {
-            vm.message.message = 'Данные сохранены';
-            vm.message.className = 'is-success';
-          })
-          .catch(function (error) {
-            vm.message.message = 'Ошибка при сохранении данных';
-            vm.message.className = 'is-danger';
-          });
-      }
-    },
-    computed: {},
-    mounted () {
-      let vm = this;
-      axios.get(routes.route('get.role.permissions'), {
+        .then(function(response) {
+          vm.message.message = 'Данные сохранены'
+          vm.message.className = 'is-success'
+        })
+        .catch(function(error) {
+          vm.message.message = 'Ошибка при сохранении данных'
+          vm.message.className = 'is-danger'
+        })
+    }
+  },
+  computed: {},
+  mounted() {
+    let vm = this
+    connection()
+      .get(routes.route('get.role.permissions'), {
         params: {
           name: this.role.name
         }
       })
-        .then(function (response) {
-          vm.rolePermissions = response.data.permissions;
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    created () {
-
-    },
-    destroyed () {
-
-    }
-  };
+      .then(function(response) {
+        vm.rolePermissions = response.data.permissions
+      })
+      .catch(function(error) {
+        console.log(error)
+      })
+  },
+  created() {},
+  destroyed() {}
+}
 </script>

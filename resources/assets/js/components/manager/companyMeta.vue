@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import connection from '../../axios/connection'
 import routes from '../../routes'
 import VueUploadComponent from 'vue-upload-component'
 
@@ -171,7 +171,7 @@ export default {
 
     save() {
       let vm = this
-      axios
+      connection()
         .post(routes.route('manager.save.company.meta'), {
           company_id: this.company_id,
           description: this.description,
@@ -209,7 +209,7 @@ export default {
     findCompany() {
       let vm = this
       vm.description = ''
-      axios
+      connection()
         .get(routes.route('manager.get.company.meta'), {
           params: {
             company_id: this.company_id
@@ -241,7 +241,7 @@ export default {
         this.files.splice(index, 1)
       } else {
         let vm = this
-        axios
+        connection()
           .delete(this.routes.route('image.delete'), {
             params: vm.images[index]
           })
@@ -264,26 +264,25 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-    .preview
-        border-radius: 3px
-        display: flex
-        border: 1px solid #c7e0ff
-        flex-direction: column
-        position: relative
-        height: 150px
-        justify-content: center
-        align-items: center
-        img
-            display: flex
-            align-items: center
-            justify-content: center
-            max-height: 125px
-            height: auto
-            width: auto
-            max-width: 125px
-
-        .preview > .delete
-            position: absolute
-            right: 0.5em
-            top: 0.5em
+  .preview
+    border-radius: 3px
+    display: flex
+    border: 1px solid #c7e0ff
+    flex-direction: column
+    position: relative
+    height: 150px
+    justify-content: center
+    align-items: center
+    img
+      display: flex
+      align-items: center
+      justify-content: center
+      max-height: 125px
+      height: auto
+      width: auto
+      max-width: 125px
+    &> .delete
+      position: absolute
+      right: 0.5em
+      top: 0.5em
 </style>

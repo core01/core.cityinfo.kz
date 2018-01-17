@@ -121,122 +121,121 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import routes from '../../routes';
+import connection from '../../axios/connection'
+import routes from '../../routes'
 
-  export default {
-    data () {
-      return {
-        permissions: {},
-        permission: '',
-        guard: '',
-        messages: {
-          permission: {
-            message: '',
-            className: '',
-          },
-          guard: {
-            message: '',
-            className: '',
-          }
+export default {
+  data() {
+    return {
+      permissions: {},
+      permission: '',
+      guard: '',
+      messages: {
+        permission: {
+          message: '',
+          className: ''
+        },
+        guard: {
+          message: '',
+          className: ''
         }
-      };
-    },
-    props: [],
-    methods: {
-      add () {
-        let vm = this;
-        this.$validator.validateAll('new').then((result) => {
-          if (result) {
-            axios.put(routes.route('add.permission'), {
-              guard_name: vm.guard,
-              name: vm.permission,
-            })
-              .then(function (response) {
-                vm.permissions.push(response.data);
-                vm.$notify.success('Успешно добавлено!');
-              })
-              .catch(function (error) {
-                vm.$notify.danger(error.response.data.message);
-              });
-          } else {
-            vm.$notify.danger('Ошибка при заполнении формы')
-          }
-        });
-      },
-      save (permission, scope) {
-        let vm = this;
-        this.$validator.validateAll(scope).then((result) => {
-          if (result) {
-            axios.post(routes.route('save.permission', {id: permission.id}), {
-              name: permission.name,
-              guard_name: permission.guard_name,
-            }).then(function (response) {
-              vm.$notify.success('Данные успешно сохранены!');
-            })
-              .catch(function (error) {
-                vm.$notify.danger(error.response.data.message);
-              });
-          } else {
-            vm.$notify.danger('Ошибка при заполнении формы');
-          }
-        });
-      },
-      clear () {
-        this.permission = '';
-        this.guard = '';
-      },
-      deletePermission (permission, index) {
-        let vm = this;
-        axios.delete(routes.route('delete.permission', {id: permission.id}))
-          .then(function (response) {
-            vm.permissions = response.data.permissions;
-            vm.$notify.success('Удалено успешно!');
-          })
-          .catch(function (error) {
-            vm.$notify.danger(error.response.data.message);
-          });
       }
+    }
+  },
+  props: [],
+  methods: {
+    add() {
+      let vm = this
+      this.$validator.validateAll('new').then(result => {
+        if (result) {
+          connection()
+            .put(routes.route('add.permission'), {
+              guard_name: vm.guard,
+              name: vm.permission
+            })
+            .then(function(response) {
+              vm.permissions.push(response.data)
+              vm.$notify.success('Успешно добавлено!')
+            })
+            .catch(function(error) {
+              vm.$notify.danger(error.response.data.message)
+            })
+        } else {
+          vm.$notify.danger('Ошибка при заполнении формы')
+        }
+      })
     },
-    computed: {},
-    mounted () {
-      let vm = this;
-      axios.get(routes.route('get.all.permissions'))
-        .then(function (response) {
-          vm.permissions = response.data.permissions;
+    save(permission, scope) {
+      let vm = this
+      this.$validator.validateAll(scope).then(result => {
+        if (result) {
+          connection()
+            .post(routes.route('save.permission', { id: permission.id }), {
+              name: permission.name,
+              guard_name: permission.guard_name
+            })
+            .then(function(response) {
+              vm.$notify.success('Данные успешно сохранены!')
+            })
+            .catch(function(error) {
+              vm.$notify.danger(error.response.data.message)
+            })
+        } else {
+          vm.$notify.danger('Ошибка при заполнении формы')
+        }
+      })
+    },
+    clear() {
+      this.permission = ''
+      this.guard = ''
+    },
+    deletePermission(permission, index) {
+      let vm = this
+      connection()
+        .delete(routes.route('delete.permission', { id: permission.id }))
+        .then(function(response) {
+          vm.permissions = response.data.permissions
+          vm.$notify.success('Удалено успешно!')
         })
-        .catch(function (error) {
-          this.$notify.danger('Ошибка при запросе на сервер');
-          console.log(error);
-        });
-    },
-    created () {
-
-    },
-    destroyed () {
-
-    },
-    components: {},
-  };
+        .catch(function(error) {
+          vm.$notify.danger(error.response.data.message)
+        })
+    }
+  },
+  computed: {},
+  mounted() {
+    let vm = this
+    connection()
+      .get(routes.route('get.all.permissions'))
+      .then(function(response) {
+        vm.permissions = response.data.permissions
+      })
+      .catch(function(error) {
+        this.$notify.danger('Ошибка при запросе на сервер')
+        console.log(error)
+      })
+  },
+  created() {},
+  destroyed() {},
+  components: {}
+}
 </script>
 <style scoped>
-    .icon.save {
-        color: #23d160
-    }
+.icon.save {
+  color: #23d160;
+}
 
-    .icon.clear {
-        color: #ffdd57
-    }
+.icon.clear {
+  color: #ffdd57;
+}
 
-    .icon.del {
-        color: #ff3860
-    }
+.icon.del {
+  color: #ff3860;
+}
 
-    .icon.save:hover,
-    .icon.del:hover,
-    .icon.clear:hover {
-        color: blue;
-    }
-
-
+.icon.save:hover,
+.icon.del:hover,
+.icon.clear:hover {
+  color: blue;
+}
 </style>
